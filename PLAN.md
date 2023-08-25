@@ -118,8 +118,33 @@ active, is the record still valid etc. The Routing Engine processes all this
 data and builds a stripped down and pre-processed record data so the DNS Query
 Handler can quickly respond to requests. 
 
-> **Note:** Database structure hasn't been finalised and will be in a later PR
-> once it has been implemented.
+| Column Name      | Data Type | Description                                   |
+| ---------------- | --------- | ----------------------------------------------|
+| `id`             | INTEGER   | Primary Key                                   |
+| `domain`         | TEXT      | The base domain of the record                 |
+| `subdomain`      | TEXT      | The subdomain, added to the domain = FQDN     |
+| `ttl`            | INTEGER   | Cache TTL for the record in seconds           |
+| `type`           | INTEGER   | Record Type (`A`, `CNAME`, `NS` etc.)         |
+| `route_type`     | INTEGER   | Custom routing type (`single`, `loadbalance`) |
+| `created_at`     | DATETIME  | When the record was added                     |
+| `updated_at`     | DATETIME  | Last Updated Time                             |
+| `deactivated_at` | DATETIME  | When record was deactivated NULLABLE          |
+| `expired_at`     | DATETIME  | If Ephemeral, when to expire NULLABLE         |
+| `allow`          | BLOB      | Allow list, comma seperated IP/Subnet NULLABLE|
+| `deny`           | BLOB      | Block list, comma seperated IP/Subnet NULLABLE|
+| `data`           | BLOB      | JSON data, specific to record type            |
+
+**A RECORD**
+
+The data structure of the `A Record` is as follows:
+
+```json
+{
+    "address": "10.10.10.10",   // Target Address
+    "last_seen": "",            // Timestamp (0001-01-01T00:00:00Z)
+    "fallback": "10.10.10.11"   // Fallback IP (Optional)
+}
+```
 
 ### Logging
 > **Note:** This will not be developed in time, probably.
