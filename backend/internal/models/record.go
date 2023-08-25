@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/miekg/dns"
@@ -8,7 +9,7 @@ import (
 
 const (
 	// DNS Record Types
-	A = dns.TypeA
+	A = int(dns.TypeA)
 
 	// DNS Record Route Types
 	Single   = 0
@@ -20,6 +21,8 @@ const (
 )
 
 type DNSRecord interface {
+	GetCommon() RecordCommon
+	GetData() []byte
 	GetResponse() dns.RR
 }
 
@@ -44,6 +47,24 @@ type RecordCommon struct {
 	Deny  []string `json:"deny"`
 }
 
-func (r *RecordCommon) GetFQDN() string {
+func (r RecordCommon) GetFQDN() string {
 	return r.Subdomain + "." + r.Domain
+}
+
+func (r RecordCommon) GetType() string {
+	switch r.Type {
+	case A:
+		return "A"
+	default:
+		return "UNKNOWN"
+	}
+}
+
+func ParseRecord(common RecordCommon, data []byte) (DNSRecord, error) {
+	switch common.Type {
+	case A:
+		return unmarshalARecord(common, data)
+	default:
+		return nil, fmt.Errorf("unsupported record type")
+	}
 }

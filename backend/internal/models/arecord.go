@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"net"
 	"time"
 
@@ -16,6 +17,51 @@ type ARecord struct {
 	// Fallback (Optional)
 	LastSeen time.Time `json:"last_seen"`
 	Fallback string    `json:"fallback,omitempty"`
+}
+
+type aRecordData struct {
+	Address string `json:"address"`
+
+	// Fallback (Optional)
+	LastSeen time.Time `json:"last_seen"`
+	Fallback string    `json:"fallback,omitempty"`
+}
+
+func unmarshalARecord(common RecordCommon, data []byte) (*ARecord, error) {
+	// Parse the record data
+	var recordData aRecordData
+	err := json.Unmarshal(data, &recordData)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ARecord{
+		RecordCommon: common,
+		Address:      recordData.Address,
+		LastSeen:     recordData.LastSeen,
+		Fallback:     recordData.Fallback,
+	}, nil
+}
+
+func marshalARecordData(record *ARecord) []byte {
+	// Parse the record data
+	recordData := aRecordData{
+		Address:  record.Address,
+		LastSeen: record.LastSeen,
+		Fallback: record.Fallback,
+	}
+
+	data, _ := json.Marshal(recordData)
+
+	return data
+}
+
+func (r *ARecord) GetCommon() RecordCommon {
+	return r.RecordCommon
+}
+
+func (r *ARecord) GetData() []byte {
+	return marshalARecordData(r)
 }
 
 // GetResponse returns a pre-processed DNS response for an A Record
