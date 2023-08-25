@@ -20,7 +20,7 @@ func LaunchDNSQueryHandler() {
 	}
 }
 
-func handleDNSQuery(queryType string, fqdn string) *dns.RR {
+func handleDNSQuery(queryType string, fqdn string) dns.RR {
 	return nil
 }
 
@@ -56,14 +56,14 @@ func handleDNSRequest(w dns.ResponseWriter, r *dns.Msg) {
 
 	// Get the question from the message
 	for _, q := range r.Question {
-		var rr *dns.RR
+		var rr dns.RR
 		if rr = handleDNSQuery(dns.TypeToString[q.Qtype], q.Name); rr == nil {
 			response.SetRcode(r, dns.RcodeNameError)
 			break
 		}
 
 		// Add the answer to the response
-		response.Answer = append(response.Answer, *rr)
+		response.Answer = append(response.Answer, rr)
 	}
 
 	w.WriteMsg(response)
