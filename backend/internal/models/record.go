@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -48,7 +49,7 @@ type RecordCommon struct {
 }
 
 func (r RecordCommon) GetFQDN() string {
-	return r.Subdomain + "." + r.Domain
+	return r.Subdomain + "." + r.Domain + "."
 }
 
 func (r RecordCommon) GetType() string {
@@ -67,4 +68,25 @@ func ParseRecord(common RecordCommon, data []byte) (DNSRecord, error) {
 	default:
 		return nil, fmt.Errorf("unsupported record type")
 	}
+}
+
+func UnmarshalJSON(data []byte) (DNSRecord, error) {
+	var common RecordCommon
+	err := json.Unmarshal(data, &common)
+	if err != nil {
+		return nil, err
+	}
+
+	switch common.Type {
+	case A:
+		var ARecord ARecord
+		err = json.Unmarshal(data, &ARecord)
+		return &ARecord, err
+	}
+
+	return nil, fmt.Errorf("unsupported record type")
+}
+
+func MarshalJSON(record DNSRecord) ([]byte, error) {
+	return json.Marshal(record)
 }

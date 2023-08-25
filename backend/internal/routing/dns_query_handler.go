@@ -4,13 +4,17 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/lcox74/tundra-dns/backend/internal/database"
 	"github.com/miekg/dns"
+	"github.com/redis/go-redis/v9"
 )
 
-func LaunchDNSQueryHandler() {
+func LaunchDNSQueryHandler(rdb *redis.Client) {
 	// Attach a function to handle DNS requests
 	server := &dns.Server{Addr: ":53", Net: "udp"}
-	dns.HandleFunc(".", handleDNSRequest)
+	dns.HandleFunc(".", func(w dns.ResponseWriter, m *dns.Msg) {
+		handleDNSRequest(rdb, w, m)
+	})
 
 	// Run the DNS Server
 	fmt.Println("Starting DNS Server")
@@ -18,10 +22,6 @@ func LaunchDNSQueryHandler() {
 	if err != nil {
 		fmt.Println(err)
 	}
-}
-
-func handleDNSQuery(queryType string, fqdn string) dns.RR {
-	return nil
 }
 
 // Testing out go memory pools to see if it helps with performance. Very much
@@ -32,7 +32,7 @@ var responsePool = sync.Pool{
 	},
 }
 
-func handleDNSRequest(w dns.ResponseWriter, r *dns.Msg) {
+func handleDNSRequest(rdb *redis.Client, w dns.ResponseWriter, r *dns.Msg) {
 	// Check if the message is a query
 	if r.MsgHdr.Response {
 		return
@@ -54,17 +54,34 @@ func handleDNSRequest(w dns.ResponseWriter, r *dns.Msg) {
 	// Set the response header
 	response.SetReply(r)
 
+	fmt.Println("Got DNS Request")
+
 	// Get the question from the message
 	for _, q := range r.Question {
-		var rr dns.RR
-		if rr = handleDNSQuery(dns.TypeToString[q.Qtype], q.Name); rr == nil {
+		fmt.Println("Got DNS Question", q)
+
+		// Get the record from the cache
+		record, err := database.FetchRecordCache(rdb, dns.TypeToString[q.Qtype], q.Name)
+		if err != nil {
+			// Most likely not found, so the record doesn't exist
 			response.SetRcode(r, dns.RcodeNameError)
+			fmt.Println("Failed to get record", err)
+			break
+		}
+
+		// Get the response from the record
+		rr := record.GetResponse()
+		if rr == nil {
+			response.SetRcode(r, dns.RcodeNameError)
+			fmt.Println("Failed to get response", err)
 			break
 		}
 
 		// Add the answer to the response
 		response.Answer = append(response.Answer, rr)
 	}
+
+	fmt.Println("Sending DNS Response")
 
 	w.WriteMsg(response)
 }

@@ -11,15 +11,10 @@ import (
 type ARecord struct {
 	RecordCommon
 
-	// Target Resource
-	Address string `json:"address"`
-
-	// Fallback (Optional)
-	LastSeen time.Time `json:"last_seen,omitempty"`
-	Fallback string    `json:"fallback,omitempty"`
+	Data ARecordData `json:"data"`
 }
 
-type aRecordData struct {
+type ARecordData struct {
 	Address string `json:"address"`
 
 	// Fallback (Optional)
@@ -29,7 +24,7 @@ type aRecordData struct {
 
 func unmarshalARecord(common RecordCommon, data []byte) (*ARecord, error) {
 	// Parse the record data
-	var recordData aRecordData
+	var recordData ARecordData
 	err := json.Unmarshal(data, &recordData)
 	if err != nil {
 		return nil, err
@@ -37,22 +32,12 @@ func unmarshalARecord(common RecordCommon, data []byte) (*ARecord, error) {
 
 	return &ARecord{
 		RecordCommon: common,
-		Address:      recordData.Address,
-		LastSeen:     recordData.LastSeen,
-		Fallback:     recordData.Fallback,
+		Data:         recordData,
 	}, nil
 }
 
 func marshalARecordData(record *ARecord) []byte {
-	// Parse the record data
-	recordData := aRecordData{
-		Address:  record.Address,
-		LastSeen: record.LastSeen,
-		Fallback: record.Fallback,
-	}
-
-	data, _ := json.Marshal(recordData)
-
+	data, _ := json.Marshal(record.Data)
 	return data
 }
 
@@ -66,10 +51,10 @@ func (r *ARecord) GetData() []byte {
 
 // GetResponse returns a pre-processed DNS response for an A Record
 func (r *ARecord) GetResponse() dns.RR {
-	// Check if the target is deactivated
-	if time.Since(r.LastSeen) > DefaultLastSeenTTL*time.Second {
-		return nil
-	}
+	// // Check if the target is deactivated
+	// if time.Since(r.Data.LastSeen) > DefaultLastSeenTTL*time.Second {
+	// 	return nil
+	// }
 
 	// Check if the record is deactivated
 	if !r.DeactivatedAt.IsZero() && time.Since(r.DeactivatedAt) > 0 {
@@ -82,7 +67,7 @@ func (r *ARecord) GetResponse() dns.RR {
 	}
 
 	// Check if the record has been seen recently
-	if r.Fallback != "" && time.Since(r.LastSeen) > DefaultLastSeenTTL*time.Second {
+	if r.Data.Fallback != "" && time.Since(r.Data.LastSeen) > DefaultLastSeenTTL*time.Second {
 		return &dns.A{
 			Hdr: dns.RR_Header{
 				Name:   r.GetFQDN(),
@@ -90,7 +75,7 @@ func (r *ARecord) GetResponse() dns.RR {
 				Class:  dns.ClassINET,
 				Ttl:    uint32(r.TTL),
 			},
-			A: net.ParseIP(r.Fallback),
+			A: net.ParseIP(r.Data.Fallback),
 		}
 	}
 
@@ -101,6 +86,6 @@ func (r *ARecord) GetResponse() dns.RR {
 			Class:  dns.ClassINET,
 			Ttl:    uint32(r.TTL),
 		},
-		A: net.ParseIP(r.Address),
+		A: net.ParseIP(r.Data.Address),
 	}
 }
