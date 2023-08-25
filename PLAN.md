@@ -103,6 +103,13 @@ request data so it can make the enformed decision on what to do. This will not
 happen cocurrently as the appropriate response needs to be sent back to the 
 client.
 
+**DNS Query Handler**
+
+As mentioned previously, this is designed to be a simple module. It recieves 
+DNS requests, looks through the request's `DNS Questions` and then polls the 
+Redis Cache for the appropriate answer. There should be little to no additional
+processing done (except for weighted load balancers).
+
 ### Database and Cache
 
 The main Database will be persistent storage of the full record data. This will
