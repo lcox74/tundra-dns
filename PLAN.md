@@ -75,7 +75,15 @@ still be able to handle more. The following will be used to build the webapp:
 - Pinia (The state management)
 - Tailwindcss (The I'm too lazy to do my own CSS)
 
-### Routing Engine
+### Backend
+
+The backend for this project is designed to be a single binary. It's built up of
+3 distinct modules: Routing Engine, Record Management API and DNS Query Handler.
+These will function seperately but do share some form of communication. This 
+will also be written in [Go](https://go.dev/) for its simplicity, speed and 
+management of threading.
+
+**Routing Engine**
 
 The Routing Engine is the core system that defines and manages everything. It 
 receives messages from the Record Management API and performs the tasks to make
@@ -86,7 +94,7 @@ The Routing Engine will periodically build/sync/upate a full routing table in
 the Redis Cache. This is so the DNS Resolver has quick access to the active 
 records without needing to do any additional processing.
 
-### API Gateway
+**API Gateway**
 
 The API Gateway has Read access to the main Database, I don't want the external
 facing API to directly affect the DB if I can handle it. So when a request to 
@@ -105,3 +113,12 @@ Handler can quickly respond to requests.
 
 > **Note:** Database structure hasn't been finalised and will be in a later PR
 > once it has been implemented.
+
+### Logging
+> **Note:** This will not be developed in time, probably.
+
+The Logging aspect of TundraDNS is simple, but runs as a seperate entity. The 
+backend service logs everything in a structurely manner into `stdout`, this can
+be captured using [vector](https://vector.dev) and automatically be directed to
+a Database (Like InfluxDB). From this data a Grafana instance can pull the logs
+from the DB and generate analyitics for us.
