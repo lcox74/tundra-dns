@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  redis:
+    container_name: tundra-redis
+    image: redis:6.0.9-alpine
+    ports:
+      - 6379:6379
+  
+  tundra:
+    container_name: tundra-dns
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - 53:53/udp
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+    
