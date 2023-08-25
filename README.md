@@ -9,9 +9,9 @@ Welcome to TundraDNS, your DNS management solution built as a project for the
 UQCS 2023 Hackathon. Effortlessly manage records, optimize traffic, and enhance 
 your online presence. Join us on this hackathon journey with TundraDNS!
 
-> **Note:** You can view an overview of the project plan [here](./PLAN.md).
+You can view an overview of the project plan [here](./PLAN.md).
 
-**Key Features**
+## Key Features
 
 TundraDNS offers a range of powerful features tailored to simplify and enhance the management of DNS records. Though these are designed to be accessed via a WebApp, all the features will be API compatible.
 
