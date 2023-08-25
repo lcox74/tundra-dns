@@ -15,7 +15,7 @@ type ARecord struct {
 	Address string `json:"address"`
 
 	// Fallback (Optional)
-	LastSeen time.Time `json:"last_seen"`
+	LastSeen time.Time `json:"last_seen,omitempty"`
 	Fallback string    `json:"fallback,omitempty"`
 }
 
@@ -23,7 +23,7 @@ type aRecordData struct {
 	Address string `json:"address"`
 
 	// Fallback (Optional)
-	LastSeen time.Time `json:"last_seen"`
+	LastSeen time.Time `json:"last_seen,omitempty"`
 	Fallback string    `json:"fallback,omitempty"`
 }
 
