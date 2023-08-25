@@ -13,6 +13,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
+      - 8053:8053/tcp # Change to listen on Tailscale IP
       - 53:53/udp
     depends_on:
       - redis

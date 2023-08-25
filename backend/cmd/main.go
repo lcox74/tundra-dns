@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/lcox74/tundra-dns/backend/internal/api"
 	"github.com/lcox74/tundra-dns/backend/internal/database"
 	"github.com/lcox74/tundra-dns/backend/internal/models"
 	"github.com/lcox74/tundra-dns/backend/internal/routing"
@@ -37,8 +38,13 @@ func main() {
 	populateRecords(db)
 	populateRoutingTable(db, rdb)
 
-	// Launch the DNS Query Handler
+	// TODO: Create Routing Engine Here...
+
+	// Launch the DNS Query Handler and API Router
+	go api.LaunchRouter(db)
 	routing.LaunchDNSQueryHandler(rdb)
+
+	// TODO: Launch Routing Engine Here...
 }
 
 func populateRecords(db *sql.DB) {
