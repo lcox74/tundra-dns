@@ -189,15 +189,15 @@ func scanToRecord(row *sql.Row) (models.DNSRecord, error) {
 	}
 
 	// Parse the timestamps.
-	recordCommon.CreatedAt, _ = time.Parse(time.DateTime, createdAt)
-	recordCommon.UpdatedAt, _ = time.Parse(time.DateTime, updatedAt)
+	recordCommon.CreatedAt, _ = time.Parse(time.RFC3339, createdAt)
+	recordCommon.UpdatedAt, _ = time.Parse(time.RFC3339, updatedAt)
 
 	// Parse the nullable timestamps.
 	if deactivatedAt.Valid {
-		recordCommon.DeactivatedAt, _ = time.Parse(time.DateTime, deactivatedAt.String)
+		recordCommon.DeactivatedAt, _ = time.Parse(time.RFC3339, deactivatedAt.String)
 	}
 	if expiredAt.Valid {
-		recordCommon.ExpiredAt, _ = time.Parse(time.DateTime, expiredAt.String)
+		recordCommon.ExpiredAt, _ = time.Parse(time.RFC3339, expiredAt.String)
 	}
 
 	// Parse the allow and deny lists.
@@ -244,15 +244,15 @@ func scanToRecordRows(rows *sql.Rows) (models.DNSRecord, error) {
 	}
 
 	// Parse the timestamps.
-	recordCommon.CreatedAt, _ = time.Parse(time.DateTime, createdAt)
-	recordCommon.UpdatedAt, _ = time.Parse(time.DateTime, updatedAt)
+	recordCommon.CreatedAt, _ = time.Parse(time.RFC3339, createdAt)
+	recordCommon.UpdatedAt, _ = time.Parse(time.RFC3339, updatedAt)
 
 	// Parse the nullable timestamps.
 	if deactivatedAt.Valid {
-		recordCommon.DeactivatedAt, _ = time.Parse(time.DateTime, deactivatedAt.String)
+		recordCommon.DeactivatedAt, _ = time.Parse(time.RFC3339, deactivatedAt.String)
 	}
 	if expiredAt.Valid {
-		recordCommon.ExpiredAt, _ = time.Parse(time.DateTime, expiredAt.String)
+		recordCommon.ExpiredAt, _ = time.Parse(time.RFC3339, expiredAt.String)
 	}
 
 	// Parse the allow and deny lists.
