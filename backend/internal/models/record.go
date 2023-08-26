@@ -11,6 +11,7 @@ import (
 const (
 	// DNS Record Types
 	A     = int(dns.TypeA)
+	NS    = int(dns.TypeNS)
 	CNAME = int(dns.TypeCNAME)
 	SOA   = int(dns.TypeSOA)
 	MX    = int(dns.TypeMX)
@@ -88,6 +89,8 @@ func ParseRecord(common RecordCommon, data []byte) (DNSRecord, error) {
 	switch common.Type {
 	case A:
 		return unmarshalARecord(common, data)
+	case NS:
+		return unmarshalNSRecord(common, data)
 	case CNAME:
 		return unmarshalCNAMERecord(common, data)
 	case MX:
@@ -113,6 +116,10 @@ func UnmarshalJSON(data []byte) (DNSRecord, error) {
 		var ARecord ARecord
 		err = json.Unmarshal(data, &ARecord)
 		return &ARecord, err
+	case NS:
+		var NSRecord NSRecord
+		err = json.Unmarshal(data, &NSRecord)
+		return &NSRecord, err
 	case CNAME:
 		var CNAMERecord CNAMERecord
 		err = json.Unmarshal(data, &CNAMERecord)

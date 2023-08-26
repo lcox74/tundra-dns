@@ -1,11 +1,16 @@
 <script lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import ARecordCard from './components/arecordCard.vue';
+import MXRecordCard from './components/mxrecordCard.vue';
+import CNAMERecordCard from './components/cnamerecordCard.vue';
+import TXTRecordCard from './components/txtrecordCard.vue';
+import SOARecordCard from './components/soarecordCard.vue';
+import NSRecordCard from './components/nsrecordCard.vue';
 
 import { useRecordsStore } from './stores/records';
 import { mapState } from 'pinia'
 
-import { Record } from './models/record';
+import { Record, RecordType } from './models/record';
 
 
 export default {
@@ -13,6 +18,11 @@ export default {
   components: {
     FontAwesomeIcon,
     ARecordCard,
+    MXRecordCard,
+    CNAMERecordCard,
+    TXTRecordCard,
+    SOARecordCard,
+    NSRecordCard,
   },
   setup() {
     const tundraStore = useRecordsStore()
@@ -24,16 +34,29 @@ export default {
     return {
       allRecords: new Array<Record>(),
       activeRecord: 0,
+
+      rType: RecordType
     };
   },
   methods: {
     getRecordComponent(type: number) {
-      const componentMap: { [t: number]: string } = {
-        1: "ARecordCard",
-        // 2: "CNAMERecordComponent"
-        // Add more mappings for other record types as needed
-      };
-      return componentMap[type] || "div";
+      console.log(type);
+      switch (type) {
+        case this.rType.A:
+          return "ARecordCard"
+        case this.rType.MX:
+          return "MXRecordCard"
+        case this.rType.CNAME:
+          return "CNAMERecordCard"
+        case this.rType.TXT:
+          return "TXTRecordCard"
+        case this.rType.SOA:
+          return "SOARecordCard"
+        case this.rType.NS:
+          return "NSRecordCard"
+      }
+
+      return "div";
     },
     handlePageClick(event: any) {
       let target = event.target;
@@ -124,4 +147,5 @@ export default {
       </div>
 
     </div>
-  </div></template>
+  </div>
+</template>

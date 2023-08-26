@@ -1,16 +1,16 @@
 <script lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import { ARecord } from '../models/record';
+import { SOARecord } from '../models/record';
 
 export default {
-    name: 'ARecordCard',
+    name: 'SOARecordCard',
     components: {
         FontAwesomeIcon,
     },
     props: {
         record: {
-            type: ARecord,
+            type: SOARecord,
             required: true,
         },
         activeRecord:  {
@@ -20,20 +20,10 @@ export default {
     },
     data() {
         return {
-            timeSinceLastSeen: 0,
-            timeSinceInterval: 0,
-
             selected: false,
         }
     },
-    mounted() {
-        this.timeSinceInterval = setInterval(() => {
-            this.setTimeSinceLastSeen()
-        }, 1000)
-    },
-    beforeDestroy() {
-        clearInterval(this.timeSinceInterval)
-    },
+
     watch: {
         activeRecord: {
             handler: function (val: number, _) {
@@ -47,16 +37,10 @@ export default {
         },
     },
     methods: {
-        setTimeSinceLastSeen() {
-            this.timeSinceLastSeen = Math.floor((Date.now() - this.record.lastSeen.getTime()) / 1000)
-        },
     },
     computed: {
         getSelected() {
             return this.selected
-        },
-        getTimeSinceLastSeen() {
-            return this.timeSinceLastSeen 
         },
     }
 }
@@ -69,16 +53,17 @@ export default {
         <div class="flex w-full h-16 ">
             <div class="grid w-full grid-cols-10 font-mono my-auto">
                 <div>
-                    <p class="text-a font-bold text-center text-2xl">A</p>
+                    <p class="text-soa font-bold text-center text-2xl">SOA</p>
                 </div>
                 <div class="col-span-1"></div>
                 <div class="col-span-2 flex">
                     <p class="text-primary my-auto font-medium text-center">{{ record.subdomain }}</p>
                 </div>
-                <div class="col-span-2"></div>
+                <div class="col-span-2">
+                    <p class="text-center">{{ record.getSerial() }}</p>
+                </div>
                 <div class="flex justify-end col-span-4 ">
-                    <p class="text-primary my-auto font-medium text-center">{{ record.address }}</p>
-                    <font-awesome-icon icon="circle" class="my-auto text-success ml-2" size="2xs" />
+                    <p class="text-primary my-auto font-medium text-center truncate text-ellipsis">{{ record.getNameserver() }}</p>
                 </div>
             </div>
         </div>
@@ -94,8 +79,19 @@ export default {
                     <p class="ml-1">{{ record.ttl }}s</p>
                 </div>
                 <div class="flex">
-                    <p class="font-semibold">Last Seen:</p>
-                    <p class="ml-1">{{ getTimeSinceLastSeen }}s</p>
+                    <p class="font-semibold">Contact:</p>
+                    <p class="ml-1">{{ record.getMailbox() }}</p>
+                </div>
+            </div>
+            <div class="w-full grid grid-cols-11">
+                <div class="w-fill p-2 bg-primary-faint rounded-md mb-4 font-mono col-span-5">
+                    <p class="flex justify-between"><b>Refresh:</b> {{ record.refresh }}s</p>
+                    <p class="flex justify-between"><b>Retry:</b> {{ record.retry }}s</p>
+                </div>
+                <div class="col-span-1"></div>
+                <div class="w-fill p-2 bg-primary-faint rounded-md mb-4 font-mono col-span-5">
+                    <p class="flex justify-between"><b>Expire:</b> {{ record.expire }}s</p>
+                    <p class="flex justify-between"><b>Minimum TTL:</b> {{ record.minimum }}s</p>
                 </div>
             </div>
             <div class="flex justify-end mb-4">

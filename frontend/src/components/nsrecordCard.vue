@@ -1,16 +1,16 @@
 <script lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import { ARecord } from '../models/record';
+import { NSRecord } from '../models/record';
 
 export default {
-    name: 'ARecordCard',
+    name: 'NSRecordCard',
     components: {
         FontAwesomeIcon,
     },
     props: {
         record: {
-            type: ARecord,
+            type: NSRecord,
             required: true,
         },
         activeRecord:  {
@@ -20,20 +20,10 @@ export default {
     },
     data() {
         return {
-            timeSinceLastSeen: 0,
-            timeSinceInterval: 0,
-
             selected: false,
         }
     },
-    mounted() {
-        this.timeSinceInterval = setInterval(() => {
-            this.setTimeSinceLastSeen()
-        }, 1000)
-    },
-    beforeDestroy() {
-        clearInterval(this.timeSinceInterval)
-    },
+
     watch: {
         activeRecord: {
             handler: function (val: number, _) {
@@ -47,16 +37,10 @@ export default {
         },
     },
     methods: {
-        setTimeSinceLastSeen() {
-            this.timeSinceLastSeen = Math.floor((Date.now() - this.record.lastSeen.getTime()) / 1000)
-        },
     },
     computed: {
         getSelected() {
             return this.selected
-        },
-        getTimeSinceLastSeen() {
-            return this.timeSinceLastSeen 
         },
     }
 }
@@ -69,7 +53,7 @@ export default {
         <div class="flex w-full h-16 ">
             <div class="grid w-full grid-cols-10 font-mono my-auto">
                 <div>
-                    <p class="text-a font-bold text-center text-2xl">A</p>
+                    <p class="text-ns font-bold text-center text-2xl">CNAME</p>
                 </div>
                 <div class="col-span-1"></div>
                 <div class="col-span-2 flex">
@@ -77,8 +61,7 @@ export default {
                 </div>
                 <div class="col-span-2"></div>
                 <div class="flex justify-end col-span-4 ">
-                    <p class="text-primary my-auto font-medium text-center">{{ record.address }}</p>
-                    <font-awesome-icon icon="circle" class="my-auto text-success ml-2" size="2xs" />
+                    <p class="text-primary my-auto font-medium text-center">{{ record.nameserver }}</p>
                 </div>
             </div>
         </div>
@@ -92,10 +75,6 @@ export default {
                 <div class="flex">
                     <p class="font-semibold">TTL:</p>
                     <p class="ml-1">{{ record.ttl }}s</p>
-                </div>
-                <div class="flex">
-                    <p class="font-semibold">Last Seen:</p>
-                    <p class="ml-1">{{ getTimeSinceLastSeen }}s</p>
                 </div>
             </div>
             <div class="flex justify-end mb-4">
