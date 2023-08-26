@@ -106,7 +106,7 @@ func populateRecords(db *sql.DB) {
 		RecordCommon: models.RecordCommon{
 			Domain:    TestFQDNDomain,
 			Subdomain: "www",
-			Type:      models.SOA,
+			Type:      models.CNAME,
 			RouteType: models.Single,
 			TTL:       models.DefaultTTLSec,
 		},
@@ -128,7 +128,7 @@ func populateRecords(db *sql.DB) {
 		RecordCommon: models.RecordCommon{
 			Domain:    TestFQDNDomain,
 			Subdomain: "@",
-			Type:      models.SOA,
+			Type:      models.MX,
 			RouteType: models.Single,
 			TTL:       models.DefaultTTLSec,
 		},
@@ -151,7 +151,7 @@ func populateRecords(db *sql.DB) {
 		RecordCommon: models.RecordCommon{
 			Domain:    TestFQDNDomain,
 			Subdomain: "@",
-			Type:      models.SOA,
+			Type:      models.TXT,
 			RouteType: models.Single,
 			TTL:       models.DefaultTTLSec,
 		},
@@ -166,7 +166,7 @@ func populateRecords(db *sql.DB) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Printf("Inserted MX record with ID: %d\n", id)
+	fmt.Printf("Inserted TXT record with ID: %d\n", id)
 
 }
 
