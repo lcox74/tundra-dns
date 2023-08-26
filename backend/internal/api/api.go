@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/lcox74/tundra-dns/backend/internal/database"
 )
@@ -18,7 +19,8 @@ func LaunchRouter(db *sql.DB) {
 		GetRecords(db, w, r)
 	}).Methods("GET")
 
-	http.ListenAndServe(":8053", r)
+	corsObj := handlers.AllowedOrigins([]string{"*"})
+	http.ListenAndServe(":8053", handlers.CORS(corsObj)(r))
 }
 
 func GetRecords(db *sql.DB, w http.ResponseWriter, r *http.Request) {
