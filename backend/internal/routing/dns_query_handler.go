@@ -81,7 +81,7 @@ func handleDNSRequest(rdb *redis.Client, w dns.ResponseWriter, r *dns.Msg) {
 		response.Answer = append(response.Answer, rr)
 	}
 
-	fmt.Println("Sending DNS Response")
+	fmt.Printf("Sending DNS Response: %+v\n", response)
 
 	w.WriteMsg(response)
 }
