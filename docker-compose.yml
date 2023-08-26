@@ -6,6 +6,8 @@ services:
     image: redis:6.0.9-alpine
     ports:
       - 6379:6379
+    volumes:
+      - ./data:/data
   
   tundra:
     container_name: tundra-dns
@@ -20,6 +22,8 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+    volumes:
+      - ./data:/app
 
   tundra-portal:
     container_name: tundra-portal
