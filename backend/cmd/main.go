@@ -12,8 +12,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-const TestFQDNSub = "test"
-const TestFQDNDomain = "tundra.test"
+const TestFQDNDomain = "tundra-test.xyz"
 
 func main() {
 	fmt.Println("Hello, World!")
@@ -50,35 +49,125 @@ func main() {
 func populateRecords(db *sql.DB) {
 	var err error
 
-	// Construct the FQDN
-	fqdn := fmt.Sprintf("%s.%s", TestFQDNSub, TestFQDNDomain)
-
 	// Get record with FQDN "test.tundra.test"
-	_, err = database.GetDNSRecordFQDN(db, fqdn)
-	if err != nil {
-		// Create A Record
-		record := &models.ARecord{
-			RecordCommon: models.RecordCommon{
-				Domain:    TestFQDNDomain,
-				Subdomain: TestFQDNSub,
-				Type:      models.A,
-				RouteType: models.Single,
-				TTL:       models.DefaultTTLSec,
-			},
-			Data: models.ARecordData{
-				Address: "10.10.10.10",
-			},
-		}
 
-		// Insert the record into the database
-		id, err := database.InsertDNSRecord(db, record)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		fmt.Printf("Inserted record with ID: %d\n", id)
+	// Create A Record
+	record1 := &models.ARecord{
+		RecordCommon: models.RecordCommon{
+			Domain:    TestFQDNDomain,
+			Subdomain: "@",
+			Type:      models.A,
+			RouteType: models.Single,
+			TTL:       models.DefaultTTLSec,
+		},
+		Data: models.ARecordData{
+			Address: "10.10.10.10",
+		},
 	}
+
+	// Insert the record into the database
+	id, err := database.InsertDNSRecord(db, record1)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("Inserted A record with ID: %d\n", id)
+
+	// Create SOA Record
+	record2 := &models.SOARecord{
+		RecordCommon: models.RecordCommon{
+			Domain:    TestFQDNDomain,
+			Subdomain: "@",
+			Type:      models.SOA,
+			RouteType: models.Single,
+			TTL:       models.DefaultTTLSec,
+		},
+		Data: models.SOARecordData{
+			Ns:      "ns.tundra-dns.io",
+			Mbox:    "admin.tundra-dns.io",
+			Serial:  1,
+			Refresh: 3600,
+			Retry:   600,
+			Expire:  604800,
+			Minttl:  60,
+		},
+	}
+
+	// Insert the record into the database
+	id, err = database.InsertDNSRecord(db, record2)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("Inserted SOA record with ID: %d\n", id)
+
+	// Create CNAME Record
+	record3 := &models.CNAMERecord{
+		RecordCommon: models.RecordCommon{
+			Domain:    TestFQDNDomain,
+			Subdomain: "www",
+			Type:      models.SOA,
+			RouteType: models.Single,
+			TTL:       models.DefaultTTLSec,
+		},
+		Data: models.CNAMERecordData{
+			Alias: TestFQDNDomain,
+		},
+	}
+
+	// Insert the record into the database
+	id, err = database.InsertDNSRecord(db, record3)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("Inserted CNAME record with ID: %d\n", id)
+
+	// Create MX Record
+	record4 := &models.MXRecord{
+		RecordCommon: models.RecordCommon{
+			Domain:    TestFQDNDomain,
+			Subdomain: "@",
+			Type:      models.SOA,
+			RouteType: models.Single,
+			TTL:       models.DefaultTTLSec,
+		},
+		Data: models.MXRecordData{
+			MailServer: "mail.tundra-dns.io",
+			Preference: 10,
+		},
+	}
+
+	// Insert the record into the database
+	id, err = database.InsertDNSRecord(db, record4)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("Inserted MX record with ID: %d\n", id)
+
+	// Create TXT Record
+	record5 := &models.TXTRecord{
+		RecordCommon: models.RecordCommon{
+			Domain:    TestFQDNDomain,
+			Subdomain: "@",
+			Type:      models.SOA,
+			RouteType: models.Single,
+			TTL:       models.DefaultTTLSec,
+		},
+		Data: models.TXTRecordData{
+			Content: []string{"Hello", "World"},
+		},
+	}
+
+	// Insert the record into the database
+	id, err = database.InsertDNSRecord(db, record5)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("Inserted MX record with ID: %d\n", id)
+
 }
 
 func populateRoutingTable(db *sql.DB, rdb *redis.Client) {
