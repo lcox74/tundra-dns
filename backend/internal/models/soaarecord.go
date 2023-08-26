@@ -65,7 +65,7 @@ func (r *SOARecord) GetResponse() dns.RR {
 	return &dns.SOA{
 		Hdr: dns.RR_Header{
 			Name:   r.GetFQDN(),
-			Rrtype: dns.TypeA,
+			Rrtype: dns.TypeSOA,
 			Class:  dns.ClassINET,
 			Ttl:    uint32(r.TTL),
 		},

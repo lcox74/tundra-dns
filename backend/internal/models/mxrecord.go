@@ -60,7 +60,7 @@ func (r *MXRecord) GetResponse() dns.RR {
 	return &dns.MX{
 		Hdr: dns.RR_Header{
 			Name:   r.GetFQDN(),
-			Rrtype: dns.TypeA,
+			Rrtype: dns.TypeMX,
 			Class:  dns.ClassINET,
 			Ttl:    uint32(r.TTL),
 		},

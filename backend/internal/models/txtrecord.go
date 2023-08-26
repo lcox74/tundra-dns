@@ -59,7 +59,7 @@ func (r *TXTRecord) GetResponse() dns.RR {
 	return &dns.TXT{
 		Hdr: dns.RR_Header{
 			Name:   r.GetFQDN(),
-			Rrtype: dns.TypeA,
+			Rrtype: dns.TypeTXT,
 			Class:  dns.ClassINET,
 			Ttl:    uint32(r.TTL),
 		},
