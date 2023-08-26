@@ -7,7 +7,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#323437",
+        primary: {
+          full: "#323437",
+          faint: "rgba(50, 52, 55, 0.1)"
+        },
         secondary: "#F6F7F9",
         accent: "#0180C9",
         success: {
@@ -18,8 +21,13 @@ export default {
       },
       textColor: {
         primary: "#323437",
-        success: "#21A54F"
-      }
+        success: "#21A54F",
+        faint: "rgba(50, 52, 55, 0.8)"
+      },
+      fontFamily: {
+        sans: ["Inter", "sans-serif"],
+        mono: ["Fira Code", "monospace"]
+      },
     },
   },
   plugins: [],
