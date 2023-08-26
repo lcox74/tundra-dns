@@ -12,7 +12,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-const TestFQDNDomain = "tundra-test.xyz"
+const TestFQDNDomain = "tundra-test.xyz."
 
 func main() {
 	fmt.Println("Hello, World!")
@@ -85,7 +85,7 @@ func populateRecords(db *sql.DB) {
 		Data: models.SOARecordData{
 			Ns:      "ns.tundra-dns.io.",
 			Mbox:    "admin.tundra-dns.io.",
-			Serial:  2318336624,
+			Serial:  1,
 			Refresh: 10000,
 			Retry:   2400,
 			Expire:  604800,
@@ -133,7 +133,7 @@ func populateRecords(db *sql.DB) {
 			TTL:       models.DefaultTTLSec,
 		},
 		Data: models.MXRecordData{
-			MailServer: "mail.tundra-dns.io",
+			MailServer: "mail.tundra-dns.io.",
 			Preference: 10,
 		},
 	}

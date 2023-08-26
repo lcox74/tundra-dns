@@ -53,9 +53,17 @@ type RecordCommon struct {
 }
 
 func (r RecordCommon) GetFQDN() string {
+
+	// Strip the trailing dot
+	if r.Domain[len(r.Domain)-1] == '.' {
+		r.Domain = r.Domain[:len(r.Domain)-1]
+	}
+
+	// Check if the subdomain is the root domain
 	if r.Subdomain == "@" {
 		return r.Domain + "."
 	}
+
 	return r.Subdomain + "." + r.Domain + "."
 }
 
