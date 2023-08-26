@@ -21,4 +21,14 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
 
+  tundra-portal:
+    container_name: tundra-portal
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080/tcp # Change to listen on Tailscale IP
+    depends_on:
+      - tundra
+
     

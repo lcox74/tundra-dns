@@ -19,7 +19,7 @@ RUN npm install
 
 # Copy source files and Build
 COPY . /app
-RUN npm run build-test
+RUN npm run build
 
 
 # ==================
