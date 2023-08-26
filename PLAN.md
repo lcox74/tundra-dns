@@ -154,3 +154,27 @@ backend service logs everything in a structurely manner into `stdout`, this can
 be captured using [vector](https://vector.dev) and automatically be directed to
 a Database (Like InfluxDB). From this data a Grafana instance can pull the logs
 from the DB and generate analyitics for us.
+
+## Frontend Design
+
+By default, going to the webapp should display the Home screen. This will 
+display all records for the domain as a minimal row based table. Though simple
+it should be interactive and intuitive.
+
+![Home Screen](./res/frontend/Home.png)
+
+The border of rows must highlight on hover to indicate possibility of selection.
+Then when selected, it should expand the row downwards showing a more detailed
+view of the record.
+
+![Selected Record](./res/frontend/Select%20Single%20Record.png)
+
+When creating a new record, a popup form should be displayed which changes 
+dynamically based on the selected type. This popup form will be used for 
+updating records as well with the button text changing accordingly.
+
+![Create/Update Record](res/frontend/Create%20Record.png)
+
+Though the design shows different routing types for the records, the priority is
+to handle single A Records before handling others. Deleting a record is also not
+currently the priority, though the button is there it wont do anything yet.
