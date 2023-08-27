@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/lcox74/tundra-dns/backend/internal/database"
+	"github.com/lcox74/tundra-dns/backend/internal/models"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -48,11 +49,13 @@ func prepopulateRoutingTable(db *sql.DB, rdb *redis.Client) {
 		return
 	}
 
+	fmt.Println("Prepopulating Redis database with records, ", len(records))
+
 	// Publish each record to the Redis database
 	for _, record := range records {
 
 		// Check if deactivated
-		if record.GetCommon().DeactivatedAt.IsZero() {
+		if !record.GetCommon().DeactivatedAt.IsZero() {
 			continue
 		}
 
@@ -70,15 +73,36 @@ func prepopulateRoutingTable(db *sql.DB, rdb *redis.Client) {
 	}
 }
 
-// TODO: Implement callbacks for record changes, these will be used by the API
-// to update the database
+// Callbacks for record changes, these will be used by the API to update the
+// database
 
-// func (r *RoutingEngine) RecordCreateCb(rr api.RecordBlueprint) {
-// 	// Do processing here
-// }
-// func (r *RoutingEngine) RecordUpdateCb(rr api.RecordBlueprint) {
-// 	// Do processing here
-// }
-// func (r *RoutingEngine) RecordDeleteCb(rr api.RecordBlueprint) {
-// 	// Do processing here
-// }
+func (r *RoutingEngine) RecordCreateCb(rr models.RecordBlueprint) error {
+
+	// Build the record
+	record := rr.Build()
+
+	// Insert the record into the database
+	_, err := database.InsertDNSRecord(r.db, record)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func (r *RoutingEngine) RecordUpdateCb(rr models.RecordBlueprint) error {
+
+	// Build the record
+	record := rr.Build()
+
+	// Update the record into the database
+	return database.UpdateDNSRecord(r.db, record)
+}
+func (r *RoutingEngine) RecordDeleteCb(rr models.RecordBlueprint) error {
+
+	if rr.Id == 0 {
+		return fmt.Errorf("record does not exist")
+	}
+
+	// Delete the record from the database
+	return database.DeleteDNSRecord(r.db, rr.Id)
+}

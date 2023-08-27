@@ -53,7 +53,7 @@ export default {
         <div class="flex w-full h-16 ">
             <div class="grid w-full grid-cols-10 font-mono my-auto">
                 <div>
-                    <p class="text-ns font-bold text-center text-2xl">CNAME</p>
+                    <p class="text-ns font-bold text-center text-2xl">NS</p>
                 </div>
                 <div class="col-span-1"></div>
                 <div class="col-span-2 flex">

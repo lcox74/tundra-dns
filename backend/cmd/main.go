@@ -2,7 +2,9 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/lcox74/tundra-dns/backend/internal/api"
@@ -39,7 +41,7 @@ func main() {
 	routingEngine := routing.NewRoutingEngine(db, rdb)
 
 	// Launch the DNS Query Handler and API Router
-	go api.LaunchRouter(db)
+	go api.LaunchRouter(db, routingEngine)
 	go routing.LaunchDNSQueryHandler(rdb)
 
 	// Launch Routing Engine
@@ -49,123 +51,52 @@ func main() {
 func populateRecords(db *sql.DB) {
 	var err error
 
-	// Get record with FQDN "test.tundra.test"
-
-	// Create A Record
-	record1 := &models.ARecord{
-		RecordCommon: models.RecordCommon{
-			Domain:    TestFQDNDomain,
-			Subdomain: "@",
-			Type:      models.A,
-			RouteType: models.Single,
-			TTL:       models.DefaultTTLSec,
-		},
-		Data: models.ARecordData{
-			Address: "10.10.10.10",
-		},
+	// Check if there is a './initial.json' file
+	_, err = os.Stat("/app/initial.json")
+	if err != nil {
+		fmt.Println("No initial.json file found.")
+		return
 	}
 
-	// Insert the record into the database
-	id, err := database.InsertDNSRecord(db, record1)
+	// Load the initial.json file
+	file, err := os.Open("/app/initial.json")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Printf("Inserted A record with ID: %d\n", id)
+	defer file.Close()
 
-	// Create SOA Record
-	record2 := &models.SOARecord{
-		RecordCommon: models.RecordCommon{
-			Domain:    TestFQDNDomain,
-			Subdomain: "@",
-			Type:      models.SOA,
-			RouteType: models.Single,
-			TTL:       models.DefaultTTLSec,
-		},
-		Data: models.SOARecordData{
-			Ns:      "ns1.tundra-dns.io.",
-			Mbox:    "admin.tundra-dns.io.",
-			Serial:  2,
-			Refresh: 10000,
-			Retry:   2400,
-			Expire:  604800,
-			Minttl:  1800,
-		},
-	}
-
-	// Insert the record into the database
-	id, err = database.InsertDNSRecord(db, record2)
+	// Parse the JSON file
+	data, err := io.ReadAll(file)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Printf("Inserted SOA record with ID: %d\n", id)
 
-	// Create CNAME Record
-	record3 := &models.CNAMERecord{
-		RecordCommon: models.RecordCommon{
-			Domain:    TestFQDNDomain,
-			Subdomain: "www",
-			Type:      models.CNAME,
-			RouteType: models.Single,
-			TTL:       models.DefaultTTLSec,
-		},
-		Data: models.CNAMERecordData{
-			Alias: TestFQDNDomain,
-		},
-	}
-
-	// Insert the record into the database
-	id, err = database.InsertDNSRecord(db, record3)
+	// Parse the JSON file
+	var records []models.RecordBlueprint
+	err = json.Unmarshal(data, &records)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Printf("Inserted CNAME record with ID: %d\n", id)
 
-	// Create MX Record
-	record4 := &models.MXRecord{
-		RecordCommon: models.RecordCommon{
-			Domain:    TestFQDNDomain,
-			Subdomain: "@",
-			Type:      models.MX,
-			RouteType: models.Single,
-			TTL:       models.DefaultTTLSec,
-		},
-		Data: models.MXRecordData{
-			MailServer: "mail.tundra-dns.io.",
-			Preference: 10,
-		},
+	// Insert the records into the database
+	for _, record := range records {
+		// Insert the record into the database
+		fmt.Println("Inserting: ", record)
+		rr := record.Build()
+		if rr == nil {
+			fmt.Println("Failed to build record")
+			continue
+		}
+
+		id, err := database.InsertDNSRecord(db, rr)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Printf("Inserted [%s] %s record with ID: %d\n", rr.GetCommon().GetType(), rr.GetCommon().GetFQDN(), id)
 	}
-
-	// Insert the record into the database
-	id, err = database.InsertDNSRecord(db, record4)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Printf("Inserted MX record with ID: %d\n", id)
-
-	// Create TXT Record
-	record5 := &models.TXTRecord{
-		RecordCommon: models.RecordCommon{
-			Domain:    TestFQDNDomain,
-			Subdomain: "@",
-			Type:      models.TXT,
-			RouteType: models.Single,
-			TTL:       models.DefaultTTLSec,
-		},
-		Data: models.TXTRecordData{
-			Content: []string{"Hello", "World"},
-		},
-	}
-
-	// Insert the record into the database
-	id, err = database.InsertDNSRecord(db, record5)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Printf("Inserted TXT record with ID: %d\n", id)
-
 }

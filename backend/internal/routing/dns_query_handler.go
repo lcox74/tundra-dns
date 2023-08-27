@@ -58,23 +58,25 @@ func handleDNSRequest(rdb *redis.Client, w dns.ResponseWriter, r *dns.Msg) {
 	response.MsgHdr.RecursionDesired = false
 	response.MsgHdr.RecursionAvailable = false
 
-	fmt.Println("Got DNS Request")
+	fmt.Println("Got DNS Request from: ", w.RemoteAddr().String())
 
 	// Get the question from the message
 	for _, q := range r.Question {
-		fmt.Println("Got DNS Question", q)
+		fmt.Println("Got DNS Question: ", dns.TypeToString[q.Qtype], q.Name)
 
 		// Get the record from the cache
 		record, err := database.FetchRecordCache(rdb, dns.TypeToString[q.Qtype], q.Name)
 		if err != nil {
 			// Most likely not found, so the record doesn't exist
 			response.SetRcode(r, dns.RcodeNameError)
+			fmt.Println("Failed to fetch record from cache: ", err)
 			break
 		}
 
 		// Get the response from the record
 		rr := record.GetResponse()
 		if rr == nil {
+			fmt.Println("Failed to generate response record: ", err)
 			response.SetRcode(r, dns.RcodeNameError)
 			break
 		}
