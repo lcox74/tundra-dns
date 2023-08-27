@@ -152,6 +152,49 @@ func InsertDNSRecord(db *sql.DB, record models.DNSRecord) (int, error) {
 	return int(id), nil
 }
 
+func UpdateDNSRecord(db *sql.DB, record models.DNSRecord) error {
+	// Update the record.
+	query := `
+		UPDATE records SET
+			domain = ?,
+			subdomain = ?,
+			ttl = ?,
+			allow = ?,
+			deny = ?,
+			data = ?,
+			updated_at = CURRENT_TIMESTAMP
+		WHERE id = ?
+	`
+
+	// Parse the record data.
+	common := record.GetCommon()
+	data := record.GetData()
+
+	// Execute the query.
+	_, err := db.Exec(
+		query,
+		common.Domain,
+		common.Subdomain,
+		common.TTL,
+		[]byte(strings.Join(common.Allow, ",")),
+		[]byte(strings.Join(common.Deny, ",")),
+		data,
+		common.Id,
+	)
+
+	return err
+}
+
+func DeleteDNSRecord(db *sql.DB, id int) error {
+	// Set the deactivated_at timestamp.
+	query := `
+		UPDATE records SET deactivated_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+	`
+
+	_, err := db.Exec(query, id)
+	return err
+}
+
 func scanToRecord(row *sql.Row) (models.DNSRecord, error) {
 	var (
 		createdAt     string

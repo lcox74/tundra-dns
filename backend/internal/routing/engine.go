@@ -90,10 +90,19 @@ func (r *RoutingEngine) RecordCreateCb(rr models.RecordBlueprint) error {
 	return nil
 }
 func (r *RoutingEngine) RecordUpdateCb(rr models.RecordBlueprint) error {
-	// Do processing here
-	return nil
+
+	// Build the record
+	record := rr.Build()
+
+	// Update the record into the database
+	return database.UpdateDNSRecord(r.db, record)
 }
 func (r *RoutingEngine) RecordDeleteCb(rr models.RecordBlueprint) error {
-	// Do processing here
-	return nil
+
+	if rr.Id == 0 {
+		return fmt.Errorf("record does not exist")
+	}
+
+	// Delete the record from the database
+	return database.DeleteDNSRecord(r.db, rr.Id)
 }

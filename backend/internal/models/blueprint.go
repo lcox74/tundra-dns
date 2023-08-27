@@ -14,6 +14,21 @@ type RecordBlueprint struct {
 	Data interface{} `json:"data"`
 }
 
+func (r *RecordBlueprint) Override(rb DNSRecord) {
+	if r.Domain == "" {
+		r.Domain = rb.GetCommon().Domain
+	}
+	if r.Subdomain == "" {
+		r.Subdomain = rb.GetCommon().Subdomain
+	}
+	if r.TTL == 0 {
+		r.TTL = rb.GetCommon().TTL
+	}
+	if r.Type == "" {
+		r.Type = rb.GetCommon().GetType()
+	}
+}
+
 func (r RecordBlueprint) Build() DNSRecord {
 
 	// Create the Common
