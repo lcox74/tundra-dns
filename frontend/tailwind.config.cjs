@@ -17,7 +17,14 @@ export default {
           full: "#21A54F",
           faint: "rgba(33, 165, 79, 0.1)"
         },
-        failure: "#B9170B"
+        failure: "#B9170B",
+
+        a: "#B9170B",
+        mx: "#0180C9",
+        cname: "#21A54F",
+        soa: "#FF9933",
+        txt: "#66CCCC",
+        ns: "#008B8B"
       },
       textColor: {
         primary: "#323437",

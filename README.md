@@ -11,6 +11,8 @@ your online presence. Join us on this hackathon journey with TundraDNS!
 
 You can view an overview of the project plan [here](./PLAN.md).
 
+![Portal](./res/portal-screenshot.png)
+
 ## Key Features
 
 TundraDNS offers a range of powerful features tailored to simplify and enhance the management of DNS records. Though these are designed to be accessed via a WebApp, all the features will be API compatible.
@@ -40,7 +42,16 @@ TundraDNS offers a range of powerful features tailored to simplify and enhance t
 ## Getting Started
 
 TundraDNS is designed to be easily selfhosted. For this reason, the best way to
-deploy this is via Docker Compose.
+deploy this is via Docker Compose. 
 
-> **TODO:** Actually write the Docker Compose file. Can't currently as I have no
-> idea what I'm able to produce and how I'm going to do the Docker Image.
+```bash
+# Get a copy of the repo
+git clone https://github.com/lcox74/tundra-dns/
+cd tundra-dns
+
+# Launch it
+docker compose up
+```
+
+> **Note:** You will have to clone the repo. I haven't pushed the images into a
+> registery yet.

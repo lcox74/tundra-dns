@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { RecordType, Record, ARecord } from "../models/record";
+import { RecordType, Record, ARecord, MXRecord, NSRecord, CNAMERecord, SOARecord, TXTRecord } from "../models/record";
 
 export const useRecordsStore = defineStore({
     id: "records",
@@ -7,7 +7,7 @@ export const useRecordsStore = defineStore({
         records: [] as Record[],
     }),
     getters: {
-        getRecords(state): Record[]{
+        getRecords(state): Record[] {
             return state.records;
         }
     },
@@ -27,6 +27,21 @@ export const useRecordsStore = defineStore({
                         switch (data.type) {
                             case RecordType.A:
                                 this.records.push(new ARecord(data));
+                                break;
+                            case RecordType.CNAME:
+                                this.records.push(new CNAMERecord(data));
+                                break;
+                            case RecordType.NS:
+                                this.records.push(new NSRecord(data));
+                                break;
+                            case RecordType.SOA:
+                                this.records.push(new SOARecord(data));
+                                break;
+                            case RecordType.MX:
+                                this.records.push(new MXRecord(data));
+                                break;
+                            case RecordType.TXT:
+                                this.records.push(new TXTRecord(data));
                                 break;
                             default:
                                 console.log("Unknown record type: " + data.type);
