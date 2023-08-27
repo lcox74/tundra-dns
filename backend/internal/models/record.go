@@ -78,6 +78,8 @@ func (r RecordCommon) GetType() string {
 		return "SOA"
 	case MX:
 		return "MX"
+	case NS:
+		return "NS"
 	case TXT:
 		return "TXT"
 	default:

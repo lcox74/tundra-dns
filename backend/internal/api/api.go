@@ -9,9 +9,10 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/lcox74/tundra-dns/backend/internal/database"
+	"github.com/lcox74/tundra-dns/backend/internal/routing"
 )
 
-func LaunchRouter(db *sql.DB) {
+func LaunchRouter(db *sql.DB, engine *routing.RoutingEngine) {
 	r := mux.NewRouter()
 
 	// API Route GET /api/records
@@ -43,4 +44,8 @@ func GetRecords(db *sql.DB, w http.ResponseWriter, r *http.Request) {
 
 	// Write JSON to ResponseWriter
 	w.Write(jsonRecords)
+}
+
+func CreateRecord(db *sql.DB, w http.ResponseWriter, r *http.Request) {
+	fmt.Println("CreateRecord")
 }

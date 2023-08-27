@@ -48,11 +48,13 @@ func prepopulateRoutingTable(db *sql.DB, rdb *redis.Client) {
 		return
 	}
 
+	fmt.Println("Prepopulating Redis database with records, ", len(records))
+
 	// Publish each record to the Redis database
 	for _, record := range records {
 
 		// Check if deactivated
-		if record.GetCommon().DeactivatedAt.IsZero() {
+		if !record.GetCommon().DeactivatedAt.IsZero() {
 			continue
 		}
 
