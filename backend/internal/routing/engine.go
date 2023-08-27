@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/lcox74/tundra-dns/backend/internal/database"
+	"github.com/lcox74/tundra-dns/backend/internal/models"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -72,15 +73,27 @@ func prepopulateRoutingTable(db *sql.DB, rdb *redis.Client) {
 	}
 }
 
-// TODO: Implement callbacks for record changes, these will be used by the API
-// to update the database
+// Callbacks for record changes, these will be used by the API to update the
+// database
 
-// func (r *RoutingEngine) RecordCreateCb(rr api.RecordBlueprint) {
-// 	// Do processing here
-// }
-// func (r *RoutingEngine) RecordUpdateCb(rr api.RecordBlueprint) {
-// 	// Do processing here
-// }
-// func (r *RoutingEngine) RecordDeleteCb(rr api.RecordBlueprint) {
-// 	// Do processing here
-// }
+func (r *RoutingEngine) RecordCreateCb(rr models.RecordBlueprint) error {
+
+	// Build the record
+	record := rr.Build()
+
+	// Insert the record into the database
+	_, err := database.InsertDNSRecord(r.db, record)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func (r *RoutingEngine) RecordUpdateCb(rr models.RecordBlueprint) error {
+	// Do processing here
+	return nil
+}
+func (r *RoutingEngine) RecordDeleteCb(rr models.RecordBlueprint) error {
+	// Do processing here
+	return nil
+}

@@ -1,9 +1,7 @@
-package api
+package models
 
 import (
 	"encoding/json"
-
-	"github.com/lcox74/tundra-dns/backend/internal/models"
 )
 
 type RecordBlueprint struct {
@@ -16,75 +14,75 @@ type RecordBlueprint struct {
 	Data interface{} `json:"data"`
 }
 
-func (r RecordBlueprint) Build() models.DNSRecord {
+func (r RecordBlueprint) Build() DNSRecord {
 
 	// Create the Common
-	common := models.RecordCommon{
+	common := RecordCommon{
 		Id:        r.Id,
 		Domain:    r.Domain,
 		Subdomain: r.Subdomain,
 		TTL:       r.TTL,
-		RouteType: models.Single,
+		RouteType: Single,
 	}
 
 	switch r.Type {
 	case "A":
-		d := models.ARecordData{}
+		d := ARecordData{}
 		jsonData, _ := json.Marshal(r.Data)
 		json.Unmarshal(jsonData, &d)
 
-		common.Type = models.A
-		return &models.ARecord{
+		common.Type = A
+		return &ARecord{
 			RecordCommon: common,
 			Data:         d,
 		}
 	case "CNAME":
-		d := models.CNAMERecordData{}
+		d := CNAMERecordData{}
 		jsonData, _ := json.Marshal(r.Data)
 		json.Unmarshal(jsonData, &d)
 
-		common.Type = models.CNAME
-		return &models.CNAMERecord{
+		common.Type = CNAME
+		return &CNAMERecord{
 			RecordCommon: common,
 			Data:         d,
 		}
 	case "SOA":
-		d := models.SOARecordData{}
+		d := SOARecordData{}
 		jsonData, _ := json.Marshal(r.Data)
 		json.Unmarshal(jsonData, &d)
 
-		common.Type = models.SOA
-		return &models.SOARecord{
+		common.Type = SOA
+		return &SOARecord{
 			RecordCommon: common,
 			Data:         d,
 		}
 	case "MX":
-		d := models.MXRecordData{}
+		d := MXRecordData{}
 		jsonData, _ := json.Marshal(r.Data)
 		json.Unmarshal(jsonData, &d)
 
-		common.Type = models.MX
-		return &models.MXRecord{
+		common.Type = MX
+		return &MXRecord{
 			RecordCommon: common,
 			Data:         d,
 		}
 	case "NS":
-		d := models.NSRecordData{}
+		d := NSRecordData{}
 		jsonData, _ := json.Marshal(r.Data)
 		json.Unmarshal(jsonData, &d)
 
-		common.Type = models.NS
-		return &models.NSRecord{
+		common.Type = NS
+		return &NSRecord{
 			RecordCommon: common,
 			Data:         d,
 		}
 	case "TXT":
-		d := models.TXTRecordData{}
+		d := TXTRecordData{}
 		jsonData, _ := json.Marshal(r.Data)
 		json.Unmarshal(jsonData, &d)
 
-		common.Type = models.TXT
-		return &models.TXTRecord{
+		common.Type = TXT
+		return &TXTRecord{
 			RecordCommon: common,
 			Data:         d,
 		}

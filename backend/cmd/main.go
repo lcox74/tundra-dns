@@ -9,6 +9,7 @@ import (
 
 	"github.com/lcox74/tundra-dns/backend/internal/api"
 	"github.com/lcox74/tundra-dns/backend/internal/database"
+	"github.com/lcox74/tundra-dns/backend/internal/models"
 	"github.com/lcox74/tundra-dns/backend/internal/routing"
 )
 
@@ -73,7 +74,7 @@ func populateRecords(db *sql.DB) {
 	}
 
 	// Parse the JSON file
-	var records []api.RecordBlueprint
+	var records []models.RecordBlueprint
 	err = json.Unmarshal(data, &records)
 	if err != nil {
 		fmt.Println(err)
