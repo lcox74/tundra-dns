@@ -54,6 +54,10 @@ func handleDNSRequest(rdb *redis.Client, w dns.ResponseWriter, r *dns.Msg) {
 	// Set the response header
 	response.SetReply(r)
 
+	// Disable DNSSEC
+	response.MsgHdr.RecursionDesired = false
+	response.MsgHdr.RecursionAvailable = false
+
 	fmt.Println("Got DNS Request")
 
 	// Get the question from the message
@@ -65,7 +69,6 @@ func handleDNSRequest(rdb *redis.Client, w dns.ResponseWriter, r *dns.Msg) {
 		if err != nil {
 			// Most likely not found, so the record doesn't exist
 			response.SetRcode(r, dns.RcodeNameError)
-			fmt.Println("Failed to get record", err)
 			break
 		}
 
@@ -73,7 +76,6 @@ func handleDNSRequest(rdb *redis.Client, w dns.ResponseWriter, r *dns.Msg) {
 		rr := record.GetResponse()
 		if rr == nil {
 			response.SetRcode(r, dns.RcodeNameError)
-			fmt.Println("Failed to get response", err)
 			break
 		}
 
@@ -81,9 +83,10 @@ func handleDNSRequest(rdb *redis.Client, w dns.ResponseWriter, r *dns.Msg) {
 		response.Answer = append(response.Answer, rr)
 	}
 
-	fmt.Printf("Sending DNS Response: %+v\n", response)
+	// Send the response
+	fmt.Println("Sending DNS Response")
 	err := w.WriteMsg(response)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Failed to send response: ", err)
 	}
 }

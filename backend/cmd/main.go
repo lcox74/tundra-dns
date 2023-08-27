@@ -83,9 +83,9 @@ func populateRecords(db *sql.DB) {
 			TTL:       models.DefaultTTLSec,
 		},
 		Data: models.SOARecordData{
-			Ns:      "ns.tundra-dns.io.",
+			Ns:      "ns1.tundra-dns.io.",
 			Mbox:    "admin.tundra-dns.io.",
-			Serial:  1,
+			Serial:  2,
 			Refresh: 10000,
 			Retry:   2400,
 			Expire:  604800,

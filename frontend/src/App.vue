@@ -114,7 +114,7 @@ export default {
             </div>
             <div class="my-auto ml-8">
               <p class="text-xl  text-primary">
-                tundra-dns.io
+                tundra-test.xyz
               </p>
               <div class="flex">
                 <div class="border-2 border-success-full rounded-full bg-success-faint">
