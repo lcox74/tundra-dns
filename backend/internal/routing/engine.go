@@ -30,6 +30,11 @@ func (r *RoutingEngine) LaunchRoutingEngine() {
 
 	// Do processing here
 	for {
+
+		// TODO: Implement a way to check for expired records and remove them
+		// from the routing table. Probably not MVP right now, dont have the
+		// time.
+
 		time.Sleep(1 * time.Second)
 	}
 }
@@ -56,7 +61,7 @@ func prepopulateRoutingTable(db *sql.DB, rdb *redis.Client) {
 			continue
 		}
 
-		fmt.Println("Publishing record to Redis database ", record.GetCommon().GetFQDN())
+		fmt.Printf("Publishing [%s] %s record to Redis database\n", record.GetCommon().GetType(), record.GetCommon().GetFQDN())
 		err = database.PublishRecordCache(rdb, record)
 		if err != nil {
 			fmt.Println(err)
