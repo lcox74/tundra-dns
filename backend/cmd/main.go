@@ -9,7 +9,6 @@ import (
 	"github.com/lcox74/tundra-dns/backend/internal/database"
 	"github.com/lcox74/tundra-dns/backend/internal/models"
 	"github.com/lcox74/tundra-dns/backend/internal/routing"
-	"github.com/redis/go-redis/v9"
 )
 
 const TestFQDNDomain = "tundra-test.xyz."
@@ -35,15 +34,16 @@ func main() {
 
 	// Lets set some dummy data
 	populateRecords(db)
-	populateRoutingTable(db, rdb)
 
-	// TODO: Create Routing Engine Here...
+	// Create Routing Engine Here
+	routingEngine := routing.NewRoutingEngine(db, rdb)
 
 	// Launch the DNS Query Handler and API Router
 	go api.LaunchRouter(db)
-	routing.LaunchDNSQueryHandler(rdb)
+	go routing.LaunchDNSQueryHandler(rdb)
 
-	// TODO: Launch Routing Engine Here...
+	// Launch Routing Engine
+	routingEngine.LaunchRoutingEngine()
 }
 
 func populateRecords(db *sql.DB) {
@@ -168,24 +168,4 @@ func populateRecords(db *sql.DB) {
 	}
 	fmt.Printf("Inserted TXT record with ID: %d\n", id)
 
-}
-
-func populateRoutingTable(db *sql.DB, rdb *redis.Client) {
-
-	// Get all records from the database
-	records, err := database.GetDNSRecords(db)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	// Publish each record to the Redis database
-	for _, record := range records {
-		fmt.Println("Publishing record to Redis database ", record.GetCommon().GetFQDN())
-		err = database.PublishRecordCache(rdb, record)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-	}
 }
